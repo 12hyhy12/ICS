@@ -301,7 +301,8 @@ int bitParity(int x) {
 int howManyBits(int x) {
 	int isneg=(x>>31)&1;
 	int y=x^((~isneg+1)&(x^~x));
-	int l=y>>16;
+	int z;
+	/*int l=y>>16;
 	int z=(!!l)<<4;
         y&=(1<<16)+~0;
 	y=l^((~!l+1)&(l^y));
@@ -315,8 +316,23 @@ int howManyBits(int x) {
 	z+=(!!l)<<1;
 	y=l^((~!l+1)&(l^y));
 	l=y>>1<<1;y&=1;	
-	z+=l^((~!l+1)&(l^y));
-  return z+1;
+	z+=l^((~!l+1)&(l^y));*/
+	y|=y>>1;
+	y|=y>>2;
+	y|=y>>4;
+	y|=y>>8;
+	y|=y>>16;
+	z=0x55;z|=z<<8;z|=z<<16;
+	y=(y&z)+((y>>1)&z);
+	z=0x33;z|=z<<8;z|=z<<16;
+	y=(y&z)+((y>>2)&z);
+	z=0x0f;z|=z<<8;z|=z<<16;
+	y=(y&z)+((y>>4)&z);
+	z=0xff;z|=z<<16;
+	y=(y&z)+((y>>8)&z);
+	z=0xff;z|=z<<8;
+	y=(y&z)+((y>>16)&z);
+	return y+1;
 }
 //float
 /* 
