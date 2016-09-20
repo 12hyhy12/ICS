@@ -301,8 +301,9 @@ int bitParity(int x) {
 int howManyBits(int x) {
 	int isneg=(x>>31)&1;
 	int y=x^((~isneg+1)&(x^~x));
-	int l=y>>16;y&=(1<<16)-1;
+	int l=y>>16;
 	int z=(!!l)<<4;
+        y&=(1<<16)+~0;
 	y=l^((~!l+1)&(l^y));
 	l=y>>8;y&=255;
 	z+=(!!l)<<3;
@@ -330,7 +331,7 @@ int howManyBits(int x) {
  *   Rating: 4
  */
 unsigned float_half(unsigned uf) {
-	int S=(uf>>31)&1;
+	int S=uf&0x80000000;
 	int E=(uf>>23)&255;
 	int M=uf&0x7fffff;
 	if (!(E^255)) return uf;
@@ -345,7 +346,7 @@ unsigned float_half(unsigned uf) {
 		M>>=1;
 		if (t) M+=M&1;
 	}
-  return (S<<31)|(E<<23)|M;
+  return S|(E<<23)|M;
 }
 /* 
  * float_i2f - Return bit-level equivalent of expression (float) x
@@ -357,19 +358,32 @@ unsigned float_half(unsigned uf) {
  *   Rating: 4
  */
 unsigned float_i2f(int x) {
+	int E=-1;
+	int S=x&0x80000000;
+	int t,y,z;
 	if (!x) return 0;
-	int E=-31;
-	int S=1;
-	if (x^0xffffffff)
-	{
-		if (x>>31) x=~x+1;
-		else S=0;
-		E=0;
-		while (x) x/=2,E++; 
-	}
+
+		if (x>>31) x=-x;
+		y=x;
+		while (y) y/=2,E++; 
+
 	x^=1<<E;
-	E+=126;
-  return (S<<31)|(E<<23)|x;
+	if (E>23)
+	{
+		t=E-24;
+		y=x&((1<<t)-1);
+		z=x&(1<<t);
+		x=(x>>(E-23))&0x7fffff;
+		if (z)
+		{
+			if (y) x++;
+			else x+=x&1;
+			if (x>>23) x=0,E++;
+		}
+	}
+	else x<<=23-E;
+	E+=127;
+  return S|(E<<23)|x;
 }
 /* 
  * float_f2i - Return bit-level equivalent of expression (int) f
@@ -384,5 +398,16 @@ unsigned float_i2f(int x) {
  *   Rating: 4
  */
 int float_f2i(unsigned uf) {
-  return 2;
+	int S=uf&0x80000000;
+	int E=(uf>>23)&255;
+	int M=uf&0x7fffff;
+	//int e=E-127;
+	if (E<127) return 0;//e<0
+	if (E>=158) return 0x80000000u;//e>31
+	M|=0x800000;
+	E-=150;
+	if (E>>31) M>>=-E; // e>=23
+	else M<<=E;
+	if (S) M=-M;
+	return M;
 }
