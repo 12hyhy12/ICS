@@ -173,8 +173,9 @@ NOTES:
  */
 int thirdBits(void) {
 	//0100 1001 0010 0100 1001 0010 0100 1001
-	int x=0x49+(1<<9);
-	return x+(x<<12)+(x<<24);
+	int x=0x49;
+	int y=(x<<9)+x;
+	return (y<<18)+y;
 }
 /*
  * isTmin - returns 1 if x is the minimum, two's complement number,
@@ -186,7 +187,7 @@ int thirdBits(void) {
 int isTmin(int x) {
 	// !(x+x)
 	// !!x
-  return !((x+x)|!x);
+ 	return !((x+x)|!x);
 }
 //2
 /* 
@@ -222,7 +223,7 @@ int anyOddBit(int x) {
  */
 int negate(int x) {
 	//x>0 (~x)+1
-  return ~x+1;
+ 	return ~x+1;
 }
 //3
 /* 
@@ -266,7 +267,7 @@ int isGreater(int x, int y) {
 	//int ob1=((~x&y)>>31)&1;
 	//int ob2=((x&~y)>>31)&1;
 	//int ob3=!(!z|((z>>31)&1));
-	// !ob2&(ob1|!((z>>31)&1))
+	//!ob2&(ob1|!((z>>31)&1))
 	// 
   return (!!z)&((( (~x|y)&((~x&y)|~z) )>>31)&1);
 }
@@ -284,7 +285,7 @@ int bitParity(int x) {
 	x=(x>>4)^x;
 	x=(x>>8)^x;
 	x=(x>>16)^x;
-  return (x&1);
+ 	return (x&1);
 }
 /* howManyBits - return the minimum number of bits required to represent x in
  *             two's complement
@@ -299,24 +300,8 @@ int bitParity(int x) {
  *  Rating: 4
  */
 int howManyBits(int x) {
-	int isneg=(x>>31)&1;
-	int y=x^((~isneg+1)&(x^~x));
+	int y=x^((x>>31)&(x^~x));
 	int z;
-	/*int l=y>>16;
-	int z=(!!l)<<4;
-        y&=(1<<16)+~0;
-	y=l^((~!l+1)&(l^y));
-	l=y>>8;y&=255;
-	z+=(!!l)<<3;
-	y=l^((~!l+1)&(l^y));
-	l=y>>4;y&=15;
-	z+=(!!l)<<2;
-	y=l^((~!l+1)&(l^y));
-	l=y>>2;y&=3;
-	z+=(!!l)<<1;
-	y=l^((~!l+1)&(l^y));
-	l=y>>1<<1;y&=1;	
-	z+=l^((~!l+1)&(l^y));*/
 	y|=y>>1;
 	y|=y>>2;
 	y|=y>>4;
@@ -362,7 +347,7 @@ unsigned float_half(unsigned uf) {
 		M>>=1;
 		if (t) M+=M&1;
 	}
-  return S|(E<<23)|M;
+ 	return S|(E<<23)|M;
 }
 /* 
  * float_i2f - Return bit-level equivalent of expression (float) x
@@ -374,15 +359,14 @@ unsigned float_half(unsigned uf) {
  *   Rating: 4
  */
 unsigned float_i2f(int x) {
-	int E=-1;
+	int E=0x4e800000;
 	int S=x&0x80000000;
-	int t,y,z;
-	if (!x) return 0;
-
-		if (x>>31) x=-x;
-		y=x;
-		while (y) y/=2,E++; 
-
+	int t=0;
+	unsigned ux;
+	/*if (!x) return 0;
+	if (x>>31) x=-x;
+	y=x;
+	while (y) y/=2,E++;
 	x^=1<<E;
 	if (E>23)
 	{
@@ -399,7 +383,20 @@ unsigned float_i2f(int x) {
 	}
 	else x<<=23-E;
 	E+=127;
-  return S|(E<<23)|x;
+ 	return S|(E<<23)|x;*/
+ 	if (x)
+ 	{
+ 		if (x<0) x=-x;
+ 		while (x>0)
+ 		{
+ 			x<<=1;E-=0x800000;
+ 		}
+ 		ux=x;
+ 		if (ux&0x80)
+ 			if (ux&0x17f) t=1;
+ 		return S+E+(ux>>8)+t;
+ 	}
+ 	return 0;
 }
 /* 
  * float_f2i - Return bit-level equivalent of expression (int) f
