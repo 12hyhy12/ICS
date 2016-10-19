@@ -1,0 +1,45 @@
+                      | # ZhangYuhao 1500012703
+  0x000:              | .pos 0x0
+  0x000:              | init:
+  0x000: 30f400010000 | 	irmovl Stack, %esp
+  0x006: 30f500010000 | 	irmovl Stack, %ebp
+  0x00c: 802c000000   | 	call Main
+  0x011: 00           | 	halt
+  0x014:              | 	.align 4
+  0x014:              | ele1:
+  0x014: 0a000000     | 		.long 0x00a
+  0x018: 1c000000     | 		.long ele2
+  0x01c:              | ele2:
+  0x01c: b0000000     | 		.long 0x0b0
+  0x020: 24000000     | 		.long ele3
+  0x024:              | ele3:
+  0x024: 000c0000     | 		.long 0xc00
+  0x028: 00000000     | 		.long 0
+  0x02c:              | Main:
+  0x02c: a05f         | 	pushl %ebp
+  0x02e: 2045         | 	rrmovl %esp,%ebp
+  0x030: 30f214000000 | 	irmovl ele1,%edx
+  0x036: a02f         | 	pushl %edx
+  0x038: 8042000000   | 	call sum
+  0x03d: 2054         | 	rrmovl %ebp,%esp
+  0x03f: b05f         | 	popl %ebp
+  0x041: 90           | 	ret
+  0x042:              | sum:
+  0x042: a05f         | 	pushl %ebp
+  0x044: 2045         | 	rrmovl %esp,%ebp
+  0x046: 30f000000000 | 	irmovl $0,%eax
+  0x04c: 502508000000 | 	mrmovl 8(%ebp),%edx
+  0x052:              | judge:
+  0x052: 6222         | 	andl %edx,%edx
+  0x054: 736c000000   | 	je end
+  0x059:              | loop:
+  0x059: 501200000000 | 	mrmovl (%edx),%ecx
+  0x05f: 6010         | 	addl %ecx,%eax
+  0x061: 502204000000 | 	mrmovl 4(%edx),%edx
+  0x067: 7052000000   | 	jmp judge
+  0x06c:              | end:
+  0x06c: 2054         | 	rrmovl %ebp,%esp
+  0x06e: b05f         | 	popl %ebp
+  0x070: 90           | 	ret
+  0x100:              | .pos 0x100
+  0x100:              | Stack:

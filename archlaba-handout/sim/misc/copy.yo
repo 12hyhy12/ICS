@@ -1,0 +1,68 @@
+                      | # ZhangYuhao 1500012703
+  0x000:              | .pos 0x0
+  0x000:              | init:
+  0x000: 30f400010000 | 	irmovl Stack, %esp
+  0x006: 30f500010000 | 	irmovl Stack, %ebp
+  0x00c: 802c000000   | 	call Main
+  0x011: 00           | 	halt
+  0x014:              | 	.align 4
+  0x014:              | src:
+  0x014: 0a000000     | 		.long 0x00a
+  0x018: b0000000     | 		.long 0x0b0
+  0x01c: 000c0000     | 		.long 0xc00
+  0x020:              | dest:
+  0x020: 11010000     | 		.long 0x111
+  0x024: 22020000     | 		.long 0x222
+  0x028: 33030000     | 		.long 0x333
+  0x02c:              | Main:
+  0x02c: a05f         | 	pushl %ebp
+  0x02e: 2045         | 	rrmovl %esp,%ebp
+  0x030: 30f203000000 | 	irmovl $3,%edx
+  0x036: a02f         | 	pushl %edx
+  0x038: 30f220000000 | 	irmovl dest,%edx
+  0x03e: a02f         | 	pushl %edx
+  0x040: 30f214000000 | 	irmovl src,%edx
+  0x046: a02f         | 	pushl %edx
+  0x048: 8052000000   | 	call copy
+  0x04d: 2054         | 	rrmovl %ebp,%esp
+  0x04f: b05f         | 	popl %ebp
+  0x051: 90           | 	ret
+  0x052:              | copy:
+  0x052: a05f         | 	pushl %ebp
+  0x054: 2045         | 	rrmovl %esp,%ebp
+  0x056: 30f000000000 | 	irmovl $0,%eax
+  0x05c: a07f         | 	pushl %edi
+  0x05e: a06f         | 	pushl %esi
+  0x060: 30f604000000 | 	irmovl $4,%esi
+  0x066: a06f         | 	pushl %esi
+  0x068: 30f601000000 | 	irmovl $1,%esi
+  0x06e: a06f         | 	pushl %esi
+  0x070: 507508000000 | 	mrmovl 8(%ebp),%edi
+  0x076: 50150c000000 | 	mrmovl 12(%ebp),%ecx
+  0x07c: 502510000000 | 	mrmovl 16(%ebp),%edx
+  0x082: 6366         | 	xorl %esi,%esi
+  0x084: 6162         | 	subl %esi,%edx
+  0x086: 71ba000000   | 	jle end
+  0x08b:              | begin:
+  0x08b: 506700000000 | 	mrmovl (%edi),%esi
+  0x091: 6360         | 	xorl %esi,%eax
+  0x093: a06f         | 	pushl %esi
+  0x095: 506408000000 | 	mrmovl 8(%esp),%esi
+  0x09b: 6067         | 	addl %esi,%edi
+  0x09d: b06f         | 	popl %esi
+  0x09f: 406100000000 | 	rmmovl %esi,(%ecx)
+  0x0a5: 506404000000 | 	mrmovl 4(%esp),%esi
+  0x0ab: 6061         | 	addl %esi,%ecx
+  0x0ad: 506400000000 | 	mrmovl (%esp),%esi
+  0x0b3: 6162         | 	subl %esi,%edx
+  0x0b5: 768b000000   | 	jg begin
+  0x0ba:              | end:
+  0x0ba: b06f         | 	popl %esi
+  0x0bc: b06f         | 	popl %esi
+  0x0be: b06f         | 	popl %esi
+  0x0c0: b07f         | 	popl %edi
+  0x0c2: 2054         | 	rrmovl %ebp,%esp
+  0x0c4: b05f         | 	popl %ebp
+  0x0c6: 90           | 	ret
+  0x100:              | .pos 0x100
+  0x100:              | Stack:

@@ -1,0 +1,68 @@
+# ZhangYuhao 1500012703
+.pos 0x0
+init:
+	irmovl Stack, %esp
+	irmovl Stack, %ebp
+	call Main
+	halt
+	.align 4
+src:
+		.long 0x00a
+		.long 0x0b0
+		.long 0xc00
+dest:
+		.long 0x111
+		.long 0x222
+		.long 0x333
+Main:
+	pushl %ebp
+	rrmovl %esp,%ebp
+	irmovl $3,%edx
+	pushl %edx
+	irmovl dest,%edx
+	pushl %edx
+	irmovl src,%edx
+	pushl %edx
+	call copy
+	rrmovl %ebp,%esp
+	popl %ebp
+	ret
+copy:
+	pushl %ebp
+	rrmovl %esp,%ebp
+	irmovl $0,%eax
+	pushl %edi
+	pushl %esi
+	irmovl $4,%esi
+	pushl %esi
+	irmovl $1,%esi
+	pushl %esi
+	mrmovl 8(%ebp),%edi
+	mrmovl 12(%ebp),%ecx
+	mrmovl 16(%ebp),%edx
+	xorl %esi,%esi
+	subl %esi,%edx
+	jle end
+begin:
+	mrmovl (%edi),%esi
+	xorl %esi,%eax
+	pushl %esi
+	mrmovl 8(%esp),%esi
+	addl %esi,%edi
+	popl %esi
+	rmmovl %esi,(%ecx)
+	mrmovl 4(%esp),%esi
+	addl %esi,%ecx
+	mrmovl (%esp),%esi
+	subl %esi,%edx
+	jg begin
+end:
+	popl %esi
+	popl %esi
+	popl %esi
+	popl %edi
+	rrmovl %ebp,%esp
+	popl %ebp
+	ret
+.pos 0x100
+Stack:
