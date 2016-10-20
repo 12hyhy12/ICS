@@ -1,4 +1,18 @@
 #Zhang Yuhao 1500012703
+#iaddl
+#valB<-rB
+#valC<-M4[PC+2]
+#valE<-valB+valC
+#set flags
+#
+#leave
+#valA<-R[%ebp]
+#valB<-R[%ebp]
+#valE<-valA+4
+#valM<-M4[valB]
+#R[%esp]<-valE
+#R[%ebp]<-valM
+#
 #/* $begin seq-all-hcl */
 ####################################################################
 #  HCL Description of Control for Single Cycle Y86 Processor SEQ   #
