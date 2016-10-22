@@ -6,15 +6,15 @@ init:
 	halt
 	.align 4
 ele1:
-		.long 0x00a
-ele2:
 		.long 0x00c
+ele2:
+		.long 0x00a
 ele3:
 		.long 0x00b
 Main:
 	pushl %ebp
 	rrmovl %esp,%ebp
-	irmovl $3,%edx
+	irmovl $2,%edx
 	pushl %edx                        # count = 3
 	irmovl ele1,%edx
 	pushl %edx
@@ -23,7 +23,84 @@ Main:
 	popl %ebp
 	ret
 
-
+bubble_a:                              ## @bubble_a
+## BB#0:
+	pushl	%ebp
+	rrmovl	%esp, %ebp
+	irmovl $28,%edx
+	subl	%edx, %esp
+	mrmovl	12(%ebp), %eax
+	mrmovl	8(%ebp), %ecx
+	rmmovl	%ecx, -4(%ebp)
+	rmmovl	%eax, -8(%ebp)
+	mrmovl	-8(%ebp), %eax
+	irmovl $1,%edx
+	subl	%edx, %eax
+	rmmovl	%eax, -16(%ebp)
+LBB0_1:                                 ## =>This Loop Header: Depth=1
+                                        ##     Child Loop BB0_3 Depth 2
+	xorl %edx,%edx
+	mrmovl -16(%ebp),%eax
+	subl %edx,%eax
+	jle	LBB0_10
+## BB#2:                                ##   in Loop: Header=BB0_1 Depth=1
+	mrmovl	-4(%ebp), %eax
+	rmmovl	%eax, -20(%ebp)
+	xorl %edx,%edx
+	rmmovl	%edx, -12(%ebp)
+LBB0_3:                                 ##   Parent Loop BB0_1 Depth=1
+                                        ## =>  This Inner Loop Header: Depth=2
+	mrmovl	-12(%ebp), %eax
+	mrmovl  -16(%ebp),%edx
+	subl	%edx, %eax
+	jge	LBB0_8
+## BB#4:                                ##   in Loop: Header=BB0_3 Depth=2
+	mrmovl	-20(%ebp), %eax
+	irmovl $4,%edx
+	addl	%edx, %eax
+	rmmovl	%eax, -24(%ebp)
+	mrmovl	-24(%ebp), %eax
+	mrmovl	(%eax), %eax
+	mrmovl	-20(%ebp), %ecx
+	mrmovl (%ecx),%edx
+	subl	%edx, %eax
+	jge	LBB0_6
+## BB#5:                                ##   in Loop: Header=BB0_3 Depth=2
+	mrmovl	-24(%ebp), %eax
+	mrmovl	(%eax), %eax
+	rmmovl	%eax, -28(%ebp)
+	mrmovl	-20(%ebp), %eax
+	mrmovl	(%eax), %eax
+	mrmovl	-24(%ebp), %ecx
+	rmmovl	%eax, (%ecx)
+	mrmovl	-28(%ebp), %eax
+	mrmovl	-20(%ebp), %ecx
+	rmmovl	%eax, (%ecx)
+LBB0_6:                                 ##   in Loop: Header=BB0_3 Depth=2
+	jmp	LBB0_7
+LBB0_7:                                 ##   in Loop: Header=BB0_3 Depth=2
+	mrmovl	-12(%ebp), %eax
+	irmovl $1,%edx
+	addl	%edx, %eax
+	rmmovl	%eax, -12(%ebp)
+	mrmovl	-20(%ebp), %eax
+	irmovl  $4,%edx
+	addl	%edx, %eax
+	rmmovl	%eax, -20(%ebp)
+	jmp	LBB0_3
+LBB0_8:                                 ##   in Loop: Header=BB0_1 Depth=1
+	jmp	LBB0_9
+LBB0_9:                                 ##   in Loop: Header=BB0_1 Depth=1
+	mrmovl	-16(%ebp), %eax
+	irmovl $-1,%edx
+	addl	%edx, %eax
+	rmmovl	%eax, -16(%ebp)
+	jmp	LBB0_1
+LBB0_10:
+	irmovl $28,%edx
+	addl	%edx, %esp
+	popl	%ebp
+	ret
 
 .pos 0x100
 Stack:

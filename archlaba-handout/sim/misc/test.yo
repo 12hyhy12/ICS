@@ -1,0 +1,107 @@
+  0x000:              | .pos 0x0
+  0x000:              | init:
+  0x000: 30f400010000 | 	irmovl Stack, %esp
+  0x006: 30f500010000 | 	irmovl Stack, %ebp
+  0x00c: 8020000000   | 	call Main
+  0x011: 00           | 	halt
+  0x014:              | 	.align 4
+  0x014:              | ele1:
+  0x014: 0c000000     | 		.long 0x00c
+  0x018:              | ele2:
+  0x018: 0a000000     | 		.long 0x00a
+  0x01c:              | ele3:
+  0x01c: 0b000000     | 		.long 0x00b
+  0x020:              | Main:
+  0x020: a05f         | 	pushl %ebp
+  0x022: 2045         | 	rrmovl %esp,%ebp
+  0x024: 30f202000000 | 	irmovl $2,%edx
+  0x02a: a02f         | 	pushl %edx                        # count = 3
+  0x02c: 30f214000000 | 	irmovl ele1,%edx
+  0x032: a02f         | 	pushl %edx
+  0x034: 803e000000   | 	call bubble_a
+  0x039: 2054         | 	rrmovl %ebp,%esp
+  0x03b: b05f         | 	popl %ebp
+  0x03d: 90           | 	ret
+                      | 
+  0x03e:              | bubble_a:                              ## @bubble_a
+                      | ## BB#0:
+  0x03e: a05f         | 	pushl	%ebp
+  0x040: 2045         | 	rrmovl	%esp, %ebp
+  0x042: 30f21c000000 | 	irmovl $28,%edx
+  0x048: 6124         | 	subl	%edx, %esp
+  0x04a: 50050c000000 | 	mrmovl	12(%ebp), %eax
+  0x050: 501508000000 | 	mrmovl	8(%ebp), %ecx
+  0x056: 4015fcffffff | 	rmmovl	%ecx, -4(%ebp)
+  0x05c: 4005f8ffffff | 	rmmovl	%eax, -8(%ebp)
+  0x062: 5005f8ffffff | 	mrmovl	-8(%ebp), %eax
+  0x068: 30f201000000 | 	irmovl $1,%edx
+  0x06e: 6120         | 	subl	%edx, %eax
+  0x070: 4005f0ffffff | 	rmmovl	%eax, -16(%ebp)
+  0x076:              | LBB0_1:                                 ## =>This Loop Header: Depth=1
+                      |                                         ##     Child Loop BB0_3 Depth 2
+  0x076: 6322         | 	xorl %edx,%edx
+  0x078: 5005f0ffffff | 	mrmovl -16(%ebp),%eax
+  0x07e: 6120         | 	subl %edx,%eax
+  0x080: 716c010000   | 	jle	LBB0_10
+                      | ## BB#2:                                ##   in Loop: Header=BB0_1 Depth=1
+  0x085: 5005fcffffff | 	mrmovl	-4(%ebp), %eax
+  0x08b: 4005ecffffff | 	rmmovl	%eax, -20(%ebp)
+  0x091: 6322         | 	xorl %edx,%edx
+  0x093: 4025f4ffffff | 	rmmovl	%edx, -12(%ebp)
+  0x099:              | LBB0_3:                                 ##   Parent Loop BB0_1 Depth=1
+                      |                                         ## =>  This Inner Loop Header: Depth=2
+  0x099: 5005f4ffffff | 	mrmovl	-12(%ebp), %eax
+  0x09f: 5025f0ffffff | 	mrmovl  -16(%ebp),%edx
+  0x0a5: 00           | 	halt
+  0x0a6: 6120         | 	subl	%edx, %eax
+  0x0a8: 754e010000   | 	jge	LBB0_8
+                      | ## BB#4:                                ##   in Loop: Header=BB0_3 Depth=2
+  0x0ad: 5005ecffffff | 	mrmovl	-20(%ebp), %eax
+  0x0b3: 30f204000000 | 	irmovl $4,%edx
+  0x0b9: 6020         | 	addl	%edx, %eax
+  0x0bb: 4005e8ffffff | 	rmmovl	%eax, -24(%ebp)
+  0x0c1: 5005e8ffffff | 	mrmovl	-24(%ebp), %eax
+  0x0c7: 500000000000 | 	mrmovl	(%eax), %eax
+  0x0cd: 5015ecffffff | 	mrmovl	-20(%ebp), %ecx
+  0x0d3: 502100000000 | 	mrmovl (%ecx),%edx
+  0x0d9: 6120         | 	subl	%edx, %eax
+  0x0db: 751c010000   | 	jge	LBB0_6
+                      | ## BB#5:                                ##   in Loop: Header=BB0_3 Depth=2
+  0x0e0: 5005e8ffffff | 	mrmovl	-24(%ebp), %eax
+  0x0e6: 500000000000 | 	mrmovl	(%eax), %eax
+  0x0ec: 4005e4ffffff | 	rmmovl	%eax, -28(%ebp)
+  0x0f2: 5005ecffffff | 	mrmovl	-20(%ebp), %eax
+  0x0f8: 500000000000 | 	mrmovl	(%eax), %eax
+  0x0fe: 5015e8ffffff | 	mrmovl	-24(%ebp), %ecx
+  0x104: 400100000000 | 	rmmovl	%eax, (%ecx)
+  0x10a: 5005e4ffffff | 	mrmovl	-28(%ebp), %eax
+  0x110: 5015ecffffff | 	mrmovl	-20(%ebp), %ecx
+  0x116: 400100000000 | 	rmmovl	%eax, (%ecx)
+  0x11c:              | LBB0_6:                                 ##   in Loop: Header=BB0_3 Depth=2
+  0x11c: 7021010000   | 	jmp	LBB0_7
+  0x121:              | LBB0_7:                                 ##   in Loop: Header=BB0_3 Depth=2
+  0x121: 5005f4ffffff | 	mrmovl	-12(%ebp), %eax
+  0x127: 30f201000000 | 	irmovl $1,%edx
+  0x12d: 6020         | 	addl	%edx, %eax
+  0x12f: 4005f4ffffff | 	rmmovl	%eax, -12(%ebp)
+  0x135: 5005ecffffff | 	mrmovl	-20(%ebp), %eax
+  0x13b: 30f204000000 | 	irmovl  $4,%edx
+  0x141: 6020         | 	addl	%edx, %eax
+  0x143: 4005ecffffff | 	rmmovl	%eax, -20(%ebp)
+  0x149: 7099000000   | 	jmp	LBB0_3
+  0x14e:              | LBB0_8:                                 ##   in Loop: Header=BB0_1 Depth=1
+  0x14e: 7053010000   | 	jmp	LBB0_9
+  0x153:              | LBB0_9:                                 ##   in Loop: Header=BB0_1 Depth=1
+  0x153: 5005f0ffffff | 	mrmovl	-16(%ebp), %eax
+  0x159: 30f2ffffffff | 	irmovl $-1,%edx
+  0x15f: 6020         | 	addl	%edx, %eax
+  0x161: 4005f0ffffff | 	rmmovl	%eax, -16(%ebp)
+  0x167: 7076000000   | 	jmp	LBB0_1
+  0x16c:              | LBB0_10:
+  0x16c: 30f21c000000 | 	irmovl $28,%edx
+  0x172: 6024         | 	addl	%edx, %esp
+  0x174: b05f         | 	popl	%ebp
+  0x176: 90           | 	ret
+                      | 
+  0x100:              | .pos 0x100
+  0x100:              | Stack:
