@@ -19,10 +19,16 @@ StartFun:
 ##################################################################
 # ncopy.ys - Copy a src block of len ints to dst.
 # Return the number of positive ints (>0) contained in src.
-#
-# Include your name and ID here.
-#
-# Describe how and why you modified the baseline code.
+
+#Zhang Yuhao 1500012703
+
+#firstly,we use the 'iaddl' instead of 'irmovl+opl'
+#secondly, we try to avoid RAW by reading from src two elements at one time.
+#By doing that, when 'mrmovl (%ebx), %esi' in 'M' statu, 'rmmovl %esi, (%ecx)' is in 'D' statu.
+#But I try to excute three or more number at one time.The performance is getting worse.
+#Because the remaining len%2 can be done using one jXX, 
+#while when the remaining is len%3 or len%4,we should use another for to complete the calculation.
+#See the details in the comment after each instruction.
 #
 ##################################################################
 # Do not modify this portion
@@ -40,22 +46,31 @@ ncopy:	pushl %ebp		# Save old frame pointer
 # You can modify this portion
 	# Loop header
 	xorl %eax,%eax		# count = 0;
-	andl %edx,%edx		# len <= 0?
-	jle Done		# if so, goto Done:
-
+	iaddl $-1, %edx		# len-=1
+	jle REMAIN
 Loop:	mrmovl (%ebx), %esi	# read val from src...
+	mrmovl 4(%ebx), %edi # read val from src+4...
+	rmmovl %esi, (%ecx)	 # ...and store it to dst
+	andl %esi, %esi		# val <= 0?
+	jle S1		# if so, goto S1:
+	iaddl $1, %eax		# count++
+S1:
+	rmmovl %edi, 4(%ecx)  # ...and store it to dst+4
+	andl %edi, %edi		# val <= 0?
+	jle Npos:	# if so, goto Npos:
+	iaddl $1, %eax		# count++
+Npos:	
+	iaddl $8, %ebx		# src+=2
+	iaddl $8, %ecx		# dst+=2
+	iaddl -2, %edx		# len-=2
+	jg Loop
+REMAIN:
+	jne Done		# if so, goto Done:
+	mrmovl (%ebx), %esi	# read val from src...
 	rmmovl %esi, (%ecx)	# ...and store it to dst
 	andl %esi, %esi		# val <= 0?
-	jle Npos		# if so, goto Npos:
-	irmovl $1, %edi
-	addl %edi, %eax		# count++
-Npos:	irmovl $1, %edi
-	subl %edi, %edx		# len--
-	irmovl $4, %edi
-	addl %edi, %ebx		# src++
-	addl %edi, %ecx		# dst++
-	andl %edx,%edx		# len > 0?
-	jg Loop			# if so, goto Loop:
+	jle Done:		# if so, goto Done:
+	iaddl $1, %eax		# count++
 ##################################################################
 # Do not modify the following section of code
 # Function epilogue.
@@ -77,7 +92,7 @@ EndFun:
 ###############################
 	.align 4
 src:
-	.long -1
+	.long 0
 	.long -2
 	.long 3
 	.long 4
