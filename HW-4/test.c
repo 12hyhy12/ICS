@@ -7,12 +7,11 @@ void bubble_a(long *data,long count)
 		for(i=0;i<last;i++,a++)
 		{
 			b=a+1;
-			if (*b<*a)
-			{
-				long t=*b;
-				*b=*a;
-				*a=t;
-			}
+			long t=*a;
+			if (*b<*a) t=*b;
+			*b^=*a;
+			*a=t;
+			*b^=*a;			
 		}
 	}
 }
