@@ -275,7 +275,7 @@ bool set_cc = E_icode == IOPL &&
 
 ## Generate valA in execute stage
 int e_valA = [
-	E_icode==IJXX && E_ifun== UNCOND :E_valC;
+	E_icode==IJXX && E_ifun!= UNCOND :E_valC;
 	1: E_valA;    # Pass valA through stage
 ];
 
