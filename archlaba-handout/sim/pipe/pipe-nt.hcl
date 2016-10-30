@@ -139,7 +139,7 @@ intsig W_valM  'mem_wb_curr->valm'	# Memory M value
 ## What address should instruction be fetched at
 int f_pc = [
 	# Mispredicted branch.  Fetch at incremented PC
-	M_icode == IJXX && !M_Cnd : M_valA;
+	M_icode == IJXX && M_Cnd : M_valA;
 	# Completion of RET instruction.
 	W_icode == IRET : W_valM;
 	# Default: Use predicted value of PC
@@ -275,8 +275,8 @@ bool set_cc = E_icode == IOPL &&
 
 ## Generate valA in execute stage
 int e_valA = [
-	E_icode==IJXX && E_ifun!= UNCOND :E_valC;
-	1: E_valA;    # Pass valA through stage
+	E_icode == IJXX && e_Cnd : E_valC;
+	1 : E_valA;    # Pass valA through stage
 ];
 
 ## Set dstE to RNONE in event of not-taken conditional move
@@ -347,7 +347,7 @@ bool D_stall =
 
 bool D_bubble =
 	# Mispredicted branch
-	(E_icode == IJXX && !e_Cnd) ||
+	(E_icode == IJXX && e_Cnd) ||
 	# Stalling at fetch while ret passes through pipeline
 	# but not condition for a load/use hazard
 	!(E_icode in { IMRMOVL, IPOPL } && E_dstM in { d_srcA, d_srcB }) &&
@@ -358,7 +358,7 @@ bool D_bubble =
 bool E_stall = 0;
 bool E_bubble =
 	# Mispredicted branch
-	(E_icode == IJXX && !e_Cnd) ||
+	(E_icode == IJXX && e_Cnd) ||
 	# Conditions for a load/use hazard
 	E_icode in { IMRMOVL, IPOPL } &&
 	 E_dstM in { d_srcA, d_srcB};

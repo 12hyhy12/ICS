@@ -1,4 +1,4 @@
-char simname[] = "Y86 Processor: pipe-nt.hcl";
+char simname[] = "Y86 Processor: pipe-lf.hcl";
 #include <stdio.h>
 #include "isa.h"
 #include "pipeline.h"
@@ -8,8 +8,8 @@ int sim_main(int argc, char *argv[]);
 int main(int argc, char *argv[]){return sim_main(argc,argv);}
 int gen_f_pc()
 {
-    return ((((ex_mem_curr->icode) == (I_JMP)) & (ex_mem_curr->takebranch))
-       ? (ex_mem_curr->vala) : ((mem_wb_curr->icode) == (I_RET)) ? 
+    return ((((ex_mem_curr->icode) == (I_JMP)) & !(ex_mem_curr->takebranch)
+        ) ? (ex_mem_curr->vala) : ((mem_wb_curr->icode) == (I_RET)) ? 
       (mem_wb_curr->valm) : (pc_curr->pc));
 }
 
@@ -58,10 +58,8 @@ int gen_need_valC()
 
 int gen_f_predPC()
 {
-    return ((((if_id_next->icode) == (I_JMP)) & ((if_id_next->ifun) != 
-          (C_YES))) ? (if_id_next->valp) : ((if_id_next->icode) == (I_JMP)
-         || (if_id_next->icode) == (I_CALL)) ? (if_id_next->valc) : 
-      (if_id_next->valp));
+    return (((if_id_next->icode) == (I_JMP) || (if_id_next->icode) == 
+        (I_CALL)) ? (if_id_next->valc) : (if_id_next->valp));
 }
 
 int gen_d_srcA()
@@ -156,8 +154,7 @@ int gen_set_cc()
 
 int gen_e_valA()
 {
-    return ((((id_ex_curr->icode) == (I_JMP)) & (ex_mem_next->takebranch))
-       ? (id_ex_curr->valc) : (id_ex_curr->vala));
+    return ((id_ex_curr->vala));
 }
 
 int gen_e_dstE()
@@ -225,23 +222,18 @@ int gen_F_bubble()
 
 int gen_F_stall()
 {
-    return ((((id_ex_curr->icode) == (I_MRMOVL) || (id_ex_curr->icode) == 
-          (I_POPL)) & ((id_ex_curr->destm) == (id_ex_next->srca) || 
-          (id_ex_curr->destm) == (id_ex_next->srcb))) | ((I_RET) == 
-        (if_id_curr->icode) || (I_RET) == (id_ex_curr->icode) || (I_RET)
-         == (ex_mem_curr->icode)));
+    return (0 | ((I_RET) == (if_id_curr->icode) || (I_RET) == 
+        (id_ex_curr->icode) || (I_RET) == (ex_mem_curr->icode)));
 }
 
 int gen_D_stall()
 {
-    return (((id_ex_curr->icode) == (I_MRMOVL) || (id_ex_curr->icode) == 
-        (I_POPL)) & ((id_ex_curr->destm) == (id_ex_next->srca) || 
-        (id_ex_curr->destm) == (id_ex_next->srcb)));
+    return 0;
 }
 
 int gen_D_bubble()
 {
-    return ((((id_ex_curr->icode) == (I_JMP)) & (ex_mem_next->takebranch))
+    return ((((id_ex_curr->icode) == (I_JMP)) & !(ex_mem_next->takebranch))
        | (!(((id_ex_curr->icode) == (I_MRMOVL) || (id_ex_curr->icode) == 
             (I_POPL)) & ((id_ex_curr->destm) == (id_ex_next->srca) || 
             (id_ex_curr->destm) == (id_ex_next->srcb))) & ((I_RET) == 
@@ -256,10 +248,8 @@ int gen_E_stall()
 
 int gen_E_bubble()
 {
-    return ((((id_ex_curr->icode) == (I_JMP)) & (ex_mem_next->takebranch))
-       | (((id_ex_curr->icode) == (I_MRMOVL) || (id_ex_curr->icode) == 
-          (I_POPL)) & ((id_ex_curr->destm) == (id_ex_next->srca) || 
-          (id_ex_curr->destm) == (id_ex_next->srcb))));
+    return ((((id_ex_curr->icode) == (I_JMP)) & !(ex_mem_next->takebranch))
+       | 0);
 }
 
 int gen_M_stall()

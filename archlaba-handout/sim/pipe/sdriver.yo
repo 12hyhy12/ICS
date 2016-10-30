@@ -92,10 +92,10 @@
                       | ###############################
   0x0c8:              | 	.align 4
   0x0c8:              | src:
-  0x0c8: ffffffff     | 	.long -1
-  0x0cc: 00000000     | 	.long 0
+  0x0c8: 01000000     | 	.long 1
+  0x0cc: feffffff     | 	.long -2
   0x0d0: 03000000     | 	.long 3
-  0x0d4: 00000000     | 	.long 0
+  0x0d4: fcffffff     | 	.long -4
   0x0d8: fadebc00     | 	.long 0xbcdefa # This shouldn't get moved
                       | 
   0x0e0:              | 	.align 16
