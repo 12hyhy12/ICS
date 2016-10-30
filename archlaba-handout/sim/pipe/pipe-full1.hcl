@@ -4,11 +4,10 @@
 #    Copyright (C) Randal E. Bryant, David R. O'Hallaron, 2010     #
 ####################################################################
 
-## Your task is to modify the design so that conditional branches are
-## predicted as being not-taken.  The code here is nearly identical
-## to that for the normal pipeline.  
-## Comments starting with keyword "BNT" have been added at places
-## relevant to the exercise.
+## Your task is to implement the iaddl and leave instructions
+## The file contains a declaration of the icodes
+## for iaddl (IIADDL) and leave (ILEAVE).
+## Your job is to add the rest of the logic to make it work
 
 ####################################################################
 #    C Include's.  Don't alter these                               #
@@ -39,20 +38,21 @@ intsig ICALL	'I_CALL'
 intsig IRET	'I_RET'
 intsig IPUSHL	'I_PUSHL'
 intsig IPOPL	'I_POPL'
+# Instruction code for iaddl instruction
+intsig IIADDL	'I_IADDL'
+# Instruction code for leave instruction
+intsig ILEAVE	'I_LEAVE'
 
 ##### Symbolic represenations of Y86 function codes            #####
 intsig FNONE    'F_NONE'        # Default function code
 
 ##### Symbolic representation of Y86 Registers referenced      #####
 intsig RESP     'REG_ESP'    	     # Stack Pointer
+intsig REBP     'REG_EBP'    	     # Frame Pointer
 intsig RNONE    'REG_NONE'   	     # Special value indicating "no register"
 
 ##### ALU Functions referenced explicitly ##########################
 intsig ALUADD	'A_ADD'		     # ALU should add its arguments
-## BNT: For modified branch prediction, need to distinguish
-## conditional vs. unconditional branches
-##### Jump conditions referenced explicitly
-intsig UNCOND 'C_YES'       	     # Unconditional transfer
 
 ##### Possible instruction status values                       #####
 intsig SBUB	'STAT_BUB'	# Bubble in stage
@@ -182,8 +182,6 @@ bool need_valC =
 
 # Predict next value of PC
 int f_predPC = [
-	# BNT: This is where you'll change the branch prediction rule
-	f_icode==IJXX && f_ifun!=UNCOND : f_valP;
 	f_icode in { IJXX, ICALL } : f_valC;
 	1 : f_valP;
 ];
@@ -241,10 +239,6 @@ int d_valB = [
 
 ################ Execute Stage #####################################
 
-# BNT: When some branches are predicted as not-taken, you need some
-# way to get valC into pipeline register M, so that
-# you can correct for a mispredicted branch.
-
 ## Select input A to ALU
 int aluA = [
 	E_icode in { IRRMOVL, IOPL } : E_valA;
@@ -274,10 +268,7 @@ bool set_cc = E_icode == IOPL &&
 	!m_stat in { SADR, SINS, SHLT } && !W_stat in { SADR, SINS, SHLT };
 
 ## Generate valA in execute stage
-int e_valA = [
-	E_icode==IJXX && E_ifun== UNCOND :E_valC;
-	1: E_valA;    # Pass valA through stage
-];
+int e_valA = E_valA;    # Pass valA through stage
 
 ## Set dstE to RNONE in event of not-taken conditional move
 int e_dstE = [
