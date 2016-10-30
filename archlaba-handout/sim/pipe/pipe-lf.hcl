@@ -271,6 +271,8 @@ bool set_cc = E_icode == IOPL &&
 ##   from memory stage when appropriate
 ## Here it is set to the default used in the normal pipeline
 int e_valA = [
+	M_icode in { IMRMOVL, IPOPL } &&
+	 M_dstM in { E_srcA, E_srcB } && E_icode == IPUSHL : m_valM;
 	1 : E_valA;  # Use valA from stage pipe register
 ];
 
@@ -329,7 +331,8 @@ bool F_bubble = 0;
 bool F_stall =
 	# Conditions for a load/use hazard
 	## Set this to the new load/use condition
-	0 ||
+	E_icode in { IMRMOVL, IPOPL } &&
+	 E_dstM in { d_srcA, d_srcB } && D_icode != IPUSHL ||
 	# Stalling at fetch while ret passes through pipeline
 	IRET in { D_icode, E_icode, M_icode };
 
@@ -338,7 +341,8 @@ bool F_stall =
 bool D_stall = 
 	# Conditions for a load/use hazard
 	## Set this to the new load/use condition
-	0; 
+	E_icode in { IMRMOVL, IPOPL } &&
+	 E_dstM in { d_srcA, d_srcB } && D_icode != IPUSHL;
 
 bool D_bubble =
 	# Mispredicted branch
@@ -356,7 +360,8 @@ bool E_bubble =
 	(E_icode == IJXX && !e_Cnd) ||
 	# Conditions for a load/use hazard
 	## Set this to the new load/use condition
-	0;
+	E_icode in { IMRMOVL, IPOPL } &&
+	 E_dstM in { d_srcA, d_srcB } && D_icode != IPUSHL;
 
 # Should I stall or inject a bubble into Pipeline Register M?
 # At most one of these can be true.
