@@ -332,7 +332,7 @@ bool F_stall =
 	# Conditions for a load/use hazard
 	## Set this to the new load/use condition
 	E_icode in { IMRMOVL, IPOPL } &&
-	 E_dstM in { d_srcA, d_srcB } && D_icode != IPUSHL ||
+	 E_dstM in { d_srcA, d_srcB } && !(D_icode in {IPUSHL,IRMMOVL} && E_dstM == d_srcA && E_dstM != d_srcB) ||
 	# Stalling at fetch while ret passes through pipeline
 	IRET in { D_icode, E_icode, M_icode };
 
@@ -342,7 +342,7 @@ bool D_stall =
 	# Conditions for a load/use hazard
 	## Set this to the new load/use condition
 	E_icode in { IMRMOVL, IPOPL } &&
-	 E_dstM in { d_srcA, d_srcB } && D_icode != IPUSHL;
+	 E_dstM in { d_srcA, d_srcB } && !(D_icode in {IPUSHL,IRMMOVL} && E_dstM == d_srcA && E_dstM != d_srcB);
 
 bool D_bubble =
 	# Mispredicted branch
@@ -361,7 +361,7 @@ bool E_bubble =
 	# Conditions for a load/use hazard
 	## Set this to the new load/use condition
 	E_icode in { IMRMOVL, IPOPL } &&
-	 E_dstM in { d_srcA, d_srcB } && D_icode != IPUSHL;
+	 E_dstM in { d_srcA, d_srcB } && !(D_icode in {IPUSHL,IRMMOVL} && E_dstM == d_srcA && E_dstM != d_srcB);
 
 # Should I stall or inject a bubble into Pipeline Register M?
 # At most one of these can be true.
