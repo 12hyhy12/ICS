@@ -33,26 +33,21 @@ void transpose_submit(int M, int N, int A[N][M], int B[M][N])
 	
 	if (N==M&&N==32)
 	{
-		int t[8],x;
+		int t0,t1,t2,t3,t4,t5,t6,t7,x;
 		for(x=0;x<M;x+=8)
 		{
 			for(i=0;i<N;i++)
 			{
-				for(j=x+7;j>=x;j--) t[j-x]=A[i][j];
-				for(j=x+7;j>=x;j--) B[j][i]=t[j-x];
+				t0=A[i][x];t1=A[i][x+1];t2=A[i][x+2];t3=A[i][x+3];t4=A[i][x+4];t5=A[i][x+5];t6=A[i][x+6];t7=A[i][x+7];
+				B[x][i]=t0;B[x+1][i]=t1;B[x+2][i]=t2;B[x+3][i]=t3;B[x+4][i]=t4;B[x+5][i]=t5;B[x+6][i]=t6;B[x+7][i]=t7;
 			}
 		}
 	}
 	else if (N==M)
 	{
-		/*A[a-b][c-d]
-		B[c-d][a-b]
-		-------------------
-		A[a][c-d] M[c-d]<=8
-		B[c-d][a] M[a-b]<=16
-		A[a+1][c-d]
-		B[c-d][a+1]
-		
+		/*
+			64*64
+			expected 8*8*20 miss
 		*/
 		int x,l;
 		for(x=0;x<M;x+=8)
@@ -76,13 +71,13 @@ void transpose_submit(int M, int N, int A[N][M], int B[M][N])
 						for(j=0;j<8;j++) B[x+l][i+j]=B[st+l][st+j];
 				}
 		}
-		int t[4];
+		int t0,t1,t2,t3;
 		for(x=0;x<M;x+=4)
 		{
 			for(i=x/8*8;i<x/8*8+8;i++)
 			{
-				for(j=x+3;j>=x;j--) t[j-x]=A[i][j];
-				for(j=x+3;j>=x;j--) B[j][i]=t[j-x];
+				t0=A[i][x];t1=A[i][x+1];t2=A[i][x+2];t3=A[i][x+3];
+				B[x][i]=t0;B[x+1][i]=t1;B[x+2][i]=t2;B[x+3][i]=t3;
 			}
 		}
 		
