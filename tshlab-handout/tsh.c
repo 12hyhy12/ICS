@@ -546,7 +546,7 @@ sigchld_handler(int sig) {
             sio_puts("] (");
             sio_putl((long) pid);
             sio_puts(") terminated by signal ");
-            sio_putl((long) WSTOPSIG(status));
+            sio_putl((long) WTERMSIG(status));
             sio_puts("\n");
             deletejob(job_list, pid);
         } //else printf("Well,...\nI don't know what can be done.\n");
