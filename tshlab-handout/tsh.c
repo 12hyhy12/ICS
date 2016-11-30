@@ -264,7 +264,8 @@ eval(char *cmdline) {
 
     //printf("-----Test say files are %s and %s -----\n",tok.infile,tok.outfile);
     if (tok.infile) input = Open(tok.infile, O_RDONLY, 0);
-    if (tok.outfile) output = Open(tok.outfile, O_WRONLY | O_CREAT | O_TRUNC, DEF_MODE);
+    if (tok.outfile)
+        output = Open(tok.outfile, O_WRONLY | O_CREAT | O_TRUNC, DEF_MODE);
 
     if (bg == -1) /* parsing error */
         return;
@@ -527,12 +528,28 @@ sigchld_handler(int sig) {
         {
             struct job_t *job = getjobpid(job_list, pid);
             job->state = ST;
-            printf("Job [%d] (%d) stopped by signal %d\n", pid2jid(pid), pid, WSTOPSIG(status));
+            /*printf("Job [%d] (%d) stopped by signal %d\n", 
+				pid2jid(pid), pid, WSTOPSIG(status));*/
+            sio_puts("Job [");
+            sio_putl((long) pid2jid(pid));
+            sio_puts("] (");
+            sio_putl((long) pid);
+            sio_puts(") stopped by signal ");
+            sio_putl((long) WSTOPSIG(status));
+            sio_puts("\n");
         } else if (WIFSIGNALED(status))//ctrl-c
         {
-            printf("Job [%d] (%d) terminated by signal %d\n", pid2jid(pid), pid, WTERMSIG(status));
+            /*printf("Job [%d] (%d) terminated by signal %d\n", 
+				pid2jid(pid), pid, WTERMSIG(status));*/
+            sio_puts("Job [");
+            sio_putl((long) pid2jid(pid));
+            sio_puts("] (");
+            sio_putl((long) pid);
+            sio_puts(") terminated by signal ");
+            sio_putl((long) WSTOPSIG(status));
+            sio_puts("\n");
             deletejob(job_list, pid);
-        } else printf("Well,...\nI don't know what can be done.\n");
+        } //else printf("Well,...\nI don't know what can be done.\n");
     }
     return;
 }
