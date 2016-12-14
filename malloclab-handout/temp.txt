@@ -1,0 +1,9 @@
+Measuring performance with a cycle counter.
+Processor clock rate ~= 2194.9 MHz
+.
+Results for mm malloc:
+  valid  util   ops    secs     Kops  trace
+ * yes    96%    4800  0.000730  6578 ./traces/random.rep
+ 1  1     96%    4800  0.000730  6578
+
+Perf index = 61 (util) & 20 (thru) = 81/100
