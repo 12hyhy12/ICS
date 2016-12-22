@@ -19,7 +19,7 @@ void initCache()//initialize the block
 {
     now = 0;
     timeFlag = 0;
-    int i;//make gcc happy because this not C99 mode
+    int i;//make gcc happy because this is not C99 mode
     for (/*int */i = 0; i < MAX_CACHE_OBJECT; i++) {
         cache[i].buf = cache[i].flag = NULL;
         cache[i].timeFlag = 0;
@@ -29,7 +29,7 @@ void initCache()//initialize the block
 static int eviction()//eviction using LRU
 {
     int Min = timeFlag + 1, id;
-    int i;//make gcc happy because this not C99 mode
+    int i;//make gcc happy because this is not C99 mode
     for (/*int */i = 0; i < MAX_CACHE_OBJECT; i++)
         if (cache[i].timeFlag > 0 && cache[i].timeFlag < Min) {
             Min = cache[i].timeFlag;
@@ -57,7 +57,7 @@ void addCache(char *host, char *port, char *path, char *buffer, int size)
         }
     if (!flag) id = eviction();
     cache[id].buf = malloc(size + 1);
-    int i;//make gcc happy because this not C99 mode
+    int i;//make gcc happy because this is not C99 mode
     for (/*int */i = 0; i < size; i++) cache[id].buf[i] = buffer[i];
     cache[id].buf[size] = '\0';
     cache[id].flag = malloc(l + 1);
@@ -71,7 +71,7 @@ int isCache(char *host, char *port, char *path, int fd)
 {
     char buf[MAXLINE];
     int l = strlen(host) + strlen(port) + strlen(path);
-    int i;//make gcc happy because this not C99 mode
+    int i;//make gcc happy because this is not C99 mode
     sprintf(buf, "%s%s%s", host, port, path);
     buf[l] = '\0';
     for (/*int */i = 0; i < MAX_CACHE_OBJECT; i++)

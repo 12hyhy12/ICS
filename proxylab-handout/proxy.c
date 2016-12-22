@@ -41,6 +41,8 @@ void *doit(void *vargp)
 //get the server host name and port, then send them a request
 {
     int fd = *(int *) vargp;
+    free(vargp);
+    Pthread_detach(Pthread_self());
     char buf[MAXLINE], method[MAXLINE], uri[MAXLINE], version[MAXLINE];
     char portNum[MAXLINE], path[MAXLINE], host[MAXLINE];
     rio_t rio, ser_rio;
